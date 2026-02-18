@@ -1,22 +1,5 @@
-// Fungsi kanggo tampilno log nang layar
-function logToScreen(message, type = 'info') {
-  const logDiv = document.getElementById('debugLog');
-  if (!logDiv) {
-    const newLog = document.createElement('div');
-    newLog.id = 'debugLog';
-    newLog.style.cssText = 'margin-top:10px;padding:10px;background:#1a1a24;border:1px solid #2a2a3a;border-radius:8px;font-family:monospace;font-size:12px;max-height:200px;overflow:auto;';
-    document.querySelector('.container').appendChild(newLog);
-  }
-  
-  const log = document.getElementById('debugLog');
-  const timestamp = new Date().toLocaleTimeString();
-  const color = type === 'error' ? '#ff6b6b' : type === 'success' ? '#51cf66' : '#74c0fc';
-  log.innerHTML += `<div style="color:${color};margin:5px 0;">[${timestamp}] ${message}</div>`;
-  log.scrollTop = log.scrollHeight;
-}
-
-// Clear log lama
-logToScreen('🚀 Starting download...', 'info');
+// PASTIKAN URL KIYE BENER!
+const API_BASE = "https://back-2ujo.vercel.app"; // ← URL backend-mu
 
 document.getElementById("downloadForm").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -26,17 +9,14 @@ document.getElementById("downloadForm").addEventListener("submit", async (e) => 
   const status = document.getElementById("status");
   const result = document.getElementById("result");
   
-  logToScreen(`📤 URL: ${url}`);
-  logToScreen(` Format: ${type}`);
-  logToScreen(`🌐 Backend: ${API_BASE}/download`);
+  console.log("🔥 Sending request to:", `${API_BASE}/download`);
+  console.log("📦 Data:", { url, format: type });
   
   status.textContent = "🔄 Lagi proses, sabar bangsat...";
   status.classList.remove("hidden");
   result.classList.add("hidden");
   
   try {
-    logToScreen('⏳ Sending request...');
-    
     const res = await fetch(`${API_BASE}/download`, {
       method: "POST",
       headers: { 
@@ -46,32 +26,52 @@ document.getElementById("downloadForm").addEventListener("submit", async (e) => 
       body: JSON.stringify({ url, format: type })
     });
     
-    logToScreen(`📥 Response: ${res.status} ${res.statusText}`);
+    console.log("📥 Response status:", res.status);
     
     if (!res.ok) {
-      const errorText = await res.text();
-      logToScreen(`❌ Error response: ${errorText}`, 'error');
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || `HTTP ${res.status}: ${res.statusText}`);
     }
     
-    logToScreen('✅ Download success! Preparing file...');
-    
+    // Get blob from response
     const blob = await res.blob();
-    logToScreen(`📦 File size: ${(blob.size / 1024 / 1024).toFixed(2)} MB`);
+    console.log("📦 Blob size:", blob.size);
     
+    // Create download URL
     const downloadUrl = window.URL.createObjectURL(blob);
+    
+    // Get filename from headers or generate one
+    const contentDisposition = res.headers.get('content-disposition');
+    let filename = 'download.mp4';
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1];
+      }
+    }
     
     status.classList.add("hidden");
     
+    // Set download link
     const downloadLink = document.getElementById("downloadLink");
     downloadLink.href = downloadUrl;
-    downloadLink.download = `download_${Date.now()}.mp4`;
-    downloadLink.textContent = "⬇️ KLIK KENE NGGO DOWNLOAD";
-    downloadLink.style.cssText = 'display:block;padding:15px;background:#51cf66;color:#000;text-align:center;text-decoration:none;border-radius:8px;font-weight:bold;margin:10px 0;';
+    downloadLink.download = filename;
+    downloadLink.textContent = `⬇️ Download ${filename}`;
     
     result.classList.remove("hidden");
-    logToScreen('✅ File siap download!', 'success');
     
+    // Cleanup after 5 minutes
+    setTimeout(() => {
+      window.URL.revokeObjectURL(downloadUrl);
+    }, 300000);
+    
+  } catch (err) {
+    console.error("❌ Error:", err);
+    status.textContent = `💔 Error: ${err.message}. Cek console (F12)!`;
+    status.classList.remove("hidden");
+    result.classList.add("hidden");
+  }
+});    
   } catch (err) {
     logToScreen(`💔 ERROR: ${err.message}`, 'error');
     logToScreen(`🔍 Detail: ${err.stack || 'No stack'}`, 'error');
