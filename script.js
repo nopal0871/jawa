@@ -1,5 +1,4 @@
-// script.js - Fetch ke backend API
-const API_BASE = "https://back-2ujo.vercel.app"; // GANTI URL BACKEND MU
+const API_BASE = "https://back-2ujo.vercel.app"; // GANTI KENE!
 
 document.getElementById("downloadForm").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -18,15 +17,20 @@ document.getElementById("downloadForm").addEventListener("submit", async (e) => 
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url, format: type })
     });
-    const data = await res.json();
     
-    if (data.error) throw new Error(data.error);
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
+    const blob = await res.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
     
     status.classList.add("hidden");
-    document.getElementById("downloadLink").href = data.download_url;
+    document.getElementById("downloadLink").href = downloadUrl;
     result.classList.remove("hidden");
   } catch (err) {
-    status.textContent = `💔 Error: ${err.message}`;
+    status.textContent = `💔 Error: ${err.message}. Cek backend URL!`;
     status.classList.remove("hidden");
+    console.error('Error:', err);
   }
 });
