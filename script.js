@@ -1,5 +1,5 @@
 // script.js - Fetch ke backend API
-const API_BASE = "https://backend-lu.onrender.com"; // GANTI URL BACKEND MU
+const API_BASE = "https://back-2ujo.vercel.app/"; // GANTI URL BACKEND MU
 
 document.getElementById("downloadForm").addEventListener("submit", async (e) => {
   e.preventDefault();
