@@ -1,0 +1,81 @@
+/* style.css - Dark Mode biar mata ga berdarah 🥀 */
+:root {
+  --bg: #0f0f13;
+  --card: #1a1a24;
+  --text: #e0e0ff;
+  --accent: #7c4dff;
+  --accent-hover: #651fff;
+  --border: #2a2a3a;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.container {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+h1 { margin-bottom: 0.5rem; }
+.subtitle { color: #aaa; margin-bottom: 1.5rem; font-size: 0.9rem; }
+input[type="url"] {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #0a0a0f;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+.options {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.options label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+button {
+  width: 100%;
+  padding: 0.9rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover { background: var(--accent-hover); }
+.hidden { display: none; }
+#status, #result {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+  background: #0a0a0f;
+  border: 1px solid var(--border);
+}
+#downloadLink {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+#downloadLink:hover { text-decoration: underline; }
